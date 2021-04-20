@@ -19,7 +19,12 @@ public class App{
 	}
 
 	public static void main(String[] args) {
-		new VideoHandler();
+		VideoHandler handler = new VideoHandler();
+
+		for(var i : handler.getVideoFiles().keySet()) {
+			System.out.println(i + " " + handler.getVideoFiles().get(i));
+		}
+
 	}
 
 	public static Logger log(LogLevel logLevel, String message) {
