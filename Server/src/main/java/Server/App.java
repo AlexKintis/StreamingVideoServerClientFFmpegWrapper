@@ -18,7 +18,7 @@ public class App{
 		files = handler.getFiles();
 
 		for(VideoFile file : files) {
-			System.out.format("%s %s",file.getName(), file.getPath());
+			System.out.format("%s %s %d %d %s",file.getName(), file.getExtension(), file.getHeight(), file.getWidth(), file.getResolution());
 		}
 	}
 

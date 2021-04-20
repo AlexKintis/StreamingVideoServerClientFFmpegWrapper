@@ -13,8 +13,8 @@ public class FFmpegWrapper {
     private static FFmpeg ffmpeg = null;
     private static FFprobe ffprobe = null;
 
-    private enum videoTypes{ avi, mp4, mkv }
-    private enum videoResolutions { _240p, _r360p, _480p, _720p, _1080p }
+    protected enum videoType { avi, mp4, mkv }
+    protected enum videoResolution { _240p, _360p, _480p, _720p, _1080p }
 
     private void initiateFFprobe(String path) {
         try {

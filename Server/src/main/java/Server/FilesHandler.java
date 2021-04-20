@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Map;
+import org.apache.commons.io.FilenameUtils;
 
 public class FilesHandler {
 
@@ -30,7 +32,8 @@ public class FilesHandler {
     private void storeVideoFileNames(Path folder) throws IOException {
         for(Path path : Files.newDirectoryStream(folder)) {
             if(!Files.isDirectory(path)) {
-                files.add(new VideoFile(path.getFileName().toString(), path));
+                Map<String, Integer> dimentions = FFmpegWrapper.getFileResolution(path);
+                files.add(new VideoFile(path.getFileName().toString(), path, FilenameUtils.getExtension(path.toString()), dimentions.get("Height"), dimentions.get("Width")));
             }
         }
     }
