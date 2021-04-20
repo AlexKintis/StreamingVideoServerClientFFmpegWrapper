@@ -16,6 +16,10 @@ public class App{
 
 		FilesHandler handler = new FilesHandler();
 		files = handler.getFiles();
+
+		for(VideoFile file : files) {
+			System.out.format("%s %s",file.getName(), file.getPath());
+		}
 	}
 
 }
