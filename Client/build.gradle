@@ -1,0 +1,22 @@
+plugins {
+	id 'application'
+}
+
+repositories {
+	jcenter()
+	mavenCentral() 
+}
+
+dependencies {
+
+	// https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+
+	// https://mvnrepository.com/artifact/net.bramp.ffmpeg/ffmpeg
+	implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.6.2'
+
+} 
+
+application {
+	mainClass = 'Client.App'
+}
