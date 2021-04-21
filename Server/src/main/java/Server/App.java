@@ -6,6 +6,7 @@ public class App{
 
 	private ArrayList<VideoFile> videoFiles;
     public static final String folderName = "videos";
+	public static java.nio.file.Path videosFolder;
 
 	public static void main(String[] args) {
 		new App().startProcess();
@@ -17,11 +18,14 @@ public class App{
 		FilesHandler handler = new FilesHandler();
 		videoFiles = handler.getFiles();
 
+		showAllVideoFiles();
+
 		handler.startVideosConversionProcess(this.videoFiles);
 
-		for(VideoFile file : videoFiles) {
-			System.out.format("%s %s %d %d %s\n",file.getName(), file.getExtension(), file.getHeight(), file.getWidth(), file.getResolution());
-		}
+	}
+
+	private void showAllVideoFiles() {
+		videoFiles.forEach(x -> System.out.println(x.toString()));
 	}
 
 }

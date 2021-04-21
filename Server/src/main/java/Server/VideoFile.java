@@ -7,15 +7,15 @@ public class VideoFile {
     private String name;
     private Path path;
     private int height;
-    private int widht;
+    private int width;
     private FFmpegWrapper.videoType extension;
     private FFmpegWrapper.videoResolution resolution;
 
     VideoFile(String name, Path path, String extension, int height, int width) {
-        this.name = name;
+        this.name = name.split("\\.")[0];
         this.path = path;
         this.height = height;
-        this.widht = width;
+        this.width = width;
         this.extension = initiateExtension(extension);
         this.resolution = initiateResolution();
     }
@@ -84,10 +84,16 @@ public class VideoFile {
     }
 
     public int getWidth() {
-        return this.widht;
+        return this.width;
     }
 
     public FFmpegWrapper.videoResolution getResolution() {
         return this.resolution;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s %d %d %s", this.name, this.extension, this.height, this.width, this.resolution);
+    }
+
 }
