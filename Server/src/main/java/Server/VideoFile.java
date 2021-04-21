@@ -6,17 +6,17 @@ public class VideoFile {
 
     private String name;
     private Path path;
-    private String extension;
     private int height;
     private int widht;
+    private FFmpegWrapper.videoType extension;
     private FFmpegWrapper.videoResolution resolution;
 
     VideoFile(String name, Path path, String extension, int height, int width) {
         this.name = name;
         this.path = path;
-        this.extension = extension;
         this.height = height;
         this.widht = width;
+        this.extension = initiateExtension(extension);
         this.resolution = initiateResolution();
     }
 
@@ -48,6 +48,25 @@ public class VideoFile {
         return video_resolution;
     }
 
+    private FFmpegWrapper.videoType initiateExtension(String extension) {
+
+        FFmpegWrapper.videoType video_type = null;
+
+        switch(extension) {
+            case "avi":
+                video_type = FFmpegWrapper.videoType.avi;
+                break;
+            case "mp4":
+                video_type = FFmpegWrapper.videoType.mp4;
+                break;
+            case "mkv":
+                video_type = FFmpegWrapper.videoType.mkv;
+                break;
+        }
+
+        return video_type;
+    }
+
     public String getName() {
         return this.name;
     }
@@ -56,7 +75,7 @@ public class VideoFile {
         return this.path;
     }
 
-    public String getExtension() {
+    public FFmpegWrapper.videoType getExtension() {
         return this.extension;
     }
 
