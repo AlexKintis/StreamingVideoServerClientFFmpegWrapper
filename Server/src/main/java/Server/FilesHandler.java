@@ -56,9 +56,22 @@ public class FilesHandler {
 
         AppLogger.log(AppLogger.LogLevel.INFO, "Starting Conversion Process");
 
+        // Remove unnecessary resolutions
         for(VideoFile file : files) {
             FFmpegWrapper.videoType origExtension = file.getExtension();
             FFmpegWrapper.videoResolution origResolution = file.getResolution();
+
+            var tempHmap = this.allPossibleResolutionsForEachVideoExtension;
+
+            for(var key : tempHmap.keySet()) {
+                var i = tempHmap.get(key);
+                i.removeAll(i.subList(i.indexOf(origResolution) + 1, i.size()));
+            }
+            tempHmap.get(origExtension).remove(origResolution);
+
+            for(var key : tempHmap.keySet()) {
+                System.out.println(key + " " + tempHmap.get(key).toString());
+            }
         }
     }
 
