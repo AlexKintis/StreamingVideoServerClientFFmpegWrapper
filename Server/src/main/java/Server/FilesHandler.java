@@ -69,15 +69,14 @@ public class FilesHandler {
 
         AppLogger.log(AppLogger.LogLevel.INFO, "Starting Conversion Process");
 
+        int videoConvertedExists = 0;
+        int allFilesToBeConverted = 0;
         for(VideoFile file : files) {
 
             ArrayList<FFmpegWrapper.videoResolution> resolutions =  new ArrayList<>(Arrays.asList(FFmpegWrapper.videoResolution.values()));
 
             FFmpegWrapper.videoResolution currentVideoResolution = file.getResolution();
             resolutions.subList(resolutions.indexOf(currentVideoResolution), resolutions.size()).clear();
-
-
-            AppLogger.log(AppLogger.LogLevel.INFO, String.format("[ Converting Video(%d/%d) : %s ]", files.indexOf(file) + 1, files.size() ,file.getName()));
 
             ListIterator<FFmpegWrapper.videoResolution> it;
             for(var videoType : FFmpegWrapper.videoType.values()) {
@@ -87,6 +86,7 @@ public class FilesHandler {
                 }
 
                 it = resolutions.listIterator(resolutions.size());
+                allFilesToBeConverted += resolutions.size();
 
                 int videoConvertedCounter = 1;
 
@@ -99,7 +99,7 @@ public class FilesHandler {
                     Path outputFile = Paths.get(App.videosFolder.toAbsolutePath().toString() + String.format("%s%s-%dp.%s", java.io.File.separator, file.getName().split("\\-")[0], videoResolution, type));
 
                     if(outputFile.toAbsolutePath().toFile().exists()) {
-                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("File already exists : %s-%dp.%s", file.getName().split("\\-")[0], videoResolution, type));
+                        videoConvertedExists++;
                         continue;
                     } else {
                         AppLogger.log(AppLogger.LogLevel.INFO, String.format("Converting Video [%s] %d/%d", type ,videoConvertedCounter++, resolutions.size()));
@@ -107,8 +107,14 @@ public class FilesHandler {
                     }
                 }
 
+
             }
 
+        }
+
+        // Display that all files are converted
+        if(videoConvertedExists == allFilesToBeConverted) {
+            AppLogger.log(AppLogger.LogLevel.INFO, "All files are fully converted");
         }
     }
 

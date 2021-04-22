@@ -51,6 +51,7 @@ public class FFmpegWrapper {
         final int videoResolution = Integer.parseInt(resolution.toString().substring(1, resolution.toString().length() - 1));
         final double originalVideoAspectRatio = file.getWidth() / (double)file.getHeight() ;
 
+
         int outputVideoWidth = (int)Math.floor(videoResolution * originalVideoAspectRatio);
 
         if(outputVideoWidth % 2 == 1) {
