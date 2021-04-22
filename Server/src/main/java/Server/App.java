@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class App{
 
-	private ArrayList<VideoFile> videoFiles;
+	protected static ArrayList<VideoFile> videoFiles;
     public static final String folderName = "videos";
 	public static java.nio.file.Path videosFolder;
 
@@ -18,12 +18,19 @@ public class App{
 		FilesHandler handler = new FilesHandler();
 		videoFiles = handler.getFiles();
 
-		handler.startVideosConversionProcess(this.videoFiles);
+		handler.startVideosConversionProcess(videoFiles);
+
+		Server server = new Server();
+		server.start();
 
 	}
 
-	private void showAllVideoFiles() {
+	protected void showAllVideoFiles() {
 		videoFiles.forEach(x -> System.out.println(x.toString()));
+	}
+
+	public ArrayList<VideoFile> getVideoFiles() {
+		return videoFiles;
 	}
 
 }
