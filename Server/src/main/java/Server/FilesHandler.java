@@ -18,7 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 public class FilesHandler {
 
     private ArrayList<VideoFile> videoFiles = new ArrayList<VideoFile>();
-    private HashMap<FFmpegWrapper.videoType, ArrayList<FFmpegWrapper.videoResolution>> allPossibleResolutionsForEachVideoExtension;
+    private boolean allFilesAreConverted;
 
     FilesHandler() {
         App.videosFolder = Paths.get(App.folderName).normalize().toAbsolutePath();
@@ -29,7 +29,6 @@ public class FilesHandler {
             AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
             System.exit(1);
         }
-        initiateAllPossibleResolutionsForEachVideoExtension();
     }
 
     private void checkIfFolderVideoFolderExists(Path folder) throws IOException {
@@ -38,7 +37,7 @@ public class FilesHandler {
         }
     }
 
-    private void storeVideoFileNames(Path folder) throws IOException {
+    public void storeVideoFileNames(Path folder) throws IOException {
 
         for(Path path : Files.newDirectoryStream(folder)) {
             if(!Files.isDirectory(path)) {
@@ -53,16 +52,6 @@ public class FilesHandler {
             }
         });
 
-    }
-
-    private void initiateAllPossibleResolutionsForEachVideoExtension() {
-
-        this.allPossibleResolutionsForEachVideoExtension = new HashMap<>();
-
-        for(FFmpegWrapper.videoType type : FFmpegWrapper.videoType.values()) {
-            ArrayList<FFmpegWrapper.videoResolution> res = new ArrayList<>(Arrays.asList(FFmpegWrapper.videoResolution.values()));
-            this.allPossibleResolutionsForEachVideoExtension.put(type, res);
-        }
     }
 
     public void startVideosConversionProcess(ArrayList<VideoFile> files) {
@@ -102,11 +91,11 @@ public class FilesHandler {
                         videoConvertedExists++;
                         continue;
                     } else {
-                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("Converting Video [%s] %d/%d", type ,videoConvertedCounter++, resolutions.size()));
+                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("Converting Video: %s [%s] %d/%d", file.getName().split("\\-")[0], type ,videoConvertedCounter++, resolutions.size()));
                         FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, cResolution, outputFile);
+                        videoConvertedExists++;
                     }
                 }
-
 
             }
 
@@ -115,10 +104,16 @@ public class FilesHandler {
         // Display that all files are converted
         if(videoConvertedExists == allFilesToBeConverted) {
             AppLogger.log(AppLogger.LogLevel.INFO, "All files are fully converted");
+            try {
+                storeVideoFileNames(App.videosFolder);
+            } catch( IOException ioex ) {
+                AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
+            }
         }
     }
 
     public ArrayList<VideoFile> getFiles() {
         return this.videoFiles;
     }
+
 }
