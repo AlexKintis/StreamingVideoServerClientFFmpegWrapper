@@ -18,7 +18,7 @@ public class App{
 		FilesHandler handler = new FilesHandler();
 		videoFiles = handler.getFiles();
 
-		showAllVideoFiles();
+		//showAllVideoFiles();
 
 		handler.startVideosConversionProcess(this.videoFiles);
 

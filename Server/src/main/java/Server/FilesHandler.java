@@ -1,14 +1,18 @@
 package Server;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.ListIterator;
+import java.util.Map;
+
 import org.apache.commons.io.FilenameUtils;
 
 public class FilesHandler {
@@ -35,13 +39,20 @@ public class FilesHandler {
     }
 
     private void storeVideoFileNames(Path folder) throws IOException {
+
         for(Path path : Files.newDirectoryStream(folder)) {
             if(!Files.isDirectory(path)) {
                 Map<String, Integer> dimentions = FFmpegWrapper.getFileResolution(path);
                 this.videoFiles.add(new VideoFile(path.getFileName().toString(), path, FilenameUtils.getExtension(path.toString()), dimentions.get("Height"), dimentions.get("Width")));
             }
         }
-        Collections.reverse(this.videoFiles);
+
+        Collections.sort(this.videoFiles, new Comparator<VideoFile>(){
+            public int compare(VideoFile o1, VideoFile o2){
+                return o1.getName().compareToIgnoreCase(o2.getName());
+            }
+        });
+
     }
 
     private void initiateAllPossibleResolutionsForEachVideoExtension() {
@@ -58,46 +69,41 @@ public class FilesHandler {
 
         AppLogger.log(AppLogger.LogLevel.INFO, "Starting Conversion Process");
 
-        var tempHmap = this.allPossibleResolutionsForEachVideoExtension;
-
-        FFmpegWrapper.videoType origExtension = files.get(0).getExtension();
-        FFmpegWrapper.videoResolution origResolution = files.get(0).getResolution();
-
-        // Preparing the hashmap to host the formats and resolutions that the video
-        // have to be converted
-        for(var key : tempHmap.keySet()) {
-            var i = tempHmap.get(key);
-            i.removeAll(i.subList(i.indexOf(origResolution) + 1, i.size()));
-        }
-        tempHmap.get(origExtension).remove(origResolution);
-
-        /*
-        tempHmap.keySet().forEach((key) -> {
-            System.out.format("%s %s\n", key, tempHmap.get(key).toString());
-        });
-        */
-
-        // Remove unnecessary resolutions
         for(VideoFile file : files) {
 
-            //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._480p);
-            //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._240p);
+            ArrayList<FFmpegWrapper.videoResolution> resolutions =  new ArrayList<>(Arrays.asList(FFmpegWrapper.videoResolution.values()));
 
-            //System.out.println(FFmpegWrapper.videoType.mp4.toString());
+            FFmpegWrapper.videoResolution currentVideoResolution = file.getResolution();
+            resolutions.subList(resolutions.indexOf(currentVideoResolution), resolutions.size()).clear();
 
-            /*
-            int count = 0;
-            for(var key : tempHmap.keySet()) {
-                System.out.print(key + " ");
-                for(var resolution : tempHmap.get(key)) {
-                    System.out.print(resolution + " ");
-                    //FFmpegWrapper.convertFile(file, key, resolution);
+            int counter = 0;
+
+            AppLogger.log(AppLogger.LogLevel.INFO, String.format("[ Converting Video(%d/%d) : %s ]", files.indexOf(file), files.size() ,file.getName()));
+
+            ListIterator<FFmpegWrapper.videoResolution> it;
+            for(var videoType : FFmpegWrapper.videoType.values()) {
+
+                it = resolutions.listIterator(resolutions.size());
+                String type = videoType.toString();
+
+                while(it.hasPrevious()) {
+
+                    FFmpegWrapper.videoResolution cResolution = it.previous();
+                    int videoResolution = Integer.parseInt(cResolution.toString().substring(1, cResolution.toString().length() - 1));
+                    Path outputFile = Paths.get(App.videosFolder.toAbsolutePath().toString() + String.format("%s%s-%dp.%s", java.io.File.separator, file.getName().split("\\-")[0], videoResolution, type));
+
+                    if(outputFile.toAbsolutePath().toFile().exists()) {
+                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("File already exists : %s.%s", file.getName(), file.getExtension()));
+                        continue;
+                    } else {
+                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("Video %d/%d", counter++, (resolutions.size() * 3) - 1));
+                        //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._480p, outputFile);
+                    }
                 }
-                System.out.println();
-            }
-            System.out.println(count);
-            */
 
+            }
+
+            //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._240p);
 
         }
     }
