@@ -82,8 +82,6 @@ public class FilesHandler {
             ListIterator<FFmpegWrapper.videoResolution> it;
             for(var videoType : FFmpegWrapper.videoType.values()) {
 
-                String type = videoType.toString();
-
                 if(file.getExtension() != videoType) {
                     resolutions.add(file.getResolution());
                 }
@@ -94,12 +92,14 @@ public class FilesHandler {
 
                 while(it.hasPrevious()) {
 
+                    String type = videoType.toString();
+
                     FFmpegWrapper.videoResolution cResolution = it.previous();
                     int videoResolution = Integer.parseInt(cResolution.toString().substring(1, cResolution.toString().length() - 1));
                     Path outputFile = Paths.get(App.videosFolder.toAbsolutePath().toString() + String.format("%s%s-%dp.%s", java.io.File.separator, file.getName().split("\\-")[0], videoResolution, type));
 
                     if(outputFile.toAbsolutePath().toFile().exists()) {
-                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("File already exists : %s.%s", file.getName(), file.getExtension()));
+                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("File already exists : %s-%dp.%s", file.getName().split("\\-")[0], videoResolution, type));
                         continue;
                     } else {
                         AppLogger.log(AppLogger.LogLevel.INFO, String.format("Converting Video [%s] %d/%d", type ,videoConvertedCounter++, resolutions.size()));
