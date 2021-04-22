@@ -48,7 +48,6 @@ public class FFmpegWrapper {
 
     public static void convertFile(VideoFile file, videoType type, videoResolution resolution, Path outputFile) {
 
-        // ffmpeg -i Falcon\ Heavy\ \&\ Starman-1080p.mp4 -vf scale=-1:720 -c:a copy output1.avi
         final int videoResolution = Integer.parseInt(resolution.toString().substring(1, resolution.toString().length() - 1));
         final double originalVideoAspectRatio = file.getWidth() / (double)file.getHeight() ;
 

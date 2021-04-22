@@ -76,15 +76,21 @@ public class FilesHandler {
             FFmpegWrapper.videoResolution currentVideoResolution = file.getResolution();
             resolutions.subList(resolutions.indexOf(currentVideoResolution), resolutions.size()).clear();
 
-            int counter = 0;
 
-            AppLogger.log(AppLogger.LogLevel.INFO, String.format("[ Converting Video(%d/%d) : %s ]", files.indexOf(file), files.size() ,file.getName()));
+            AppLogger.log(AppLogger.LogLevel.INFO, String.format("[ Converting Video(%d/%d) : %s ]", files.indexOf(file) + 1, files.size() ,file.getName()));
 
             ListIterator<FFmpegWrapper.videoResolution> it;
             for(var videoType : FFmpegWrapper.videoType.values()) {
 
-                it = resolutions.listIterator(resolutions.size());
                 String type = videoType.toString();
+
+                if(file.getExtension() != videoType) {
+                    resolutions.add(file.getResolution());
+                }
+
+                it = resolutions.listIterator(resolutions.size());
+
+                int videoConvertedCounter = 1;
 
                 while(it.hasPrevious()) {
 
@@ -96,14 +102,12 @@ public class FilesHandler {
                         AppLogger.log(AppLogger.LogLevel.INFO, String.format("File already exists : %s.%s", file.getName(), file.getExtension()));
                         continue;
                     } else {
-                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("Video %d/%d", counter++, (resolutions.size() * 3) - 1));
-                        //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._480p, outputFile);
+                        AppLogger.log(AppLogger.LogLevel.INFO, String.format("Converting Video [%s] %d/%d", type ,videoConvertedCounter++, resolutions.size()));
+                        FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, cResolution, outputFile);
                     }
                 }
 
             }
-
-            //FFmpegWrapper.convertFile(file, FFmpegWrapper.videoType.mp4, FFmpegWrapper.videoResolution._240p);
 
         }
     }
