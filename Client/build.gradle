@@ -15,6 +15,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/net.bramp.ffmpeg/ffmpeg
 	implementation group: 'net.bramp.ffmpeg', name: 'ffmpeg', version: '0.6.2'
 
+    // https://mvnrepository.com/artifact/fr.bmartel/jspeedtest
+    implementation group: 'fr.bmartel', name: 'jspeedtest', version: '1.32.1'
+
 } 
 
 application {

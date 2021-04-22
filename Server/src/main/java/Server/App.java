@@ -21,7 +21,7 @@ public class App{
 		handler.startVideosConversionProcess(videoFiles);
 
 		Server server = new Server();
-		server.start();
+		//server.start();
 
 	}
 
