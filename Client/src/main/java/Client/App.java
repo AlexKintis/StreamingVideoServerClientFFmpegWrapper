@@ -10,9 +10,14 @@ import fr.bmartel.speedtest.model.SpeedTestError;
 
 public class App implements ISpeedTestListener {
 
+	// SpeedTest attributes
 	static Logger log = LogManager.getLogger(Logger.class);
     private final static int SOCKET_TIMEOUT = 5000;
     private SpeedTestSocket speedTestSocket;
+
+	// Socket attributes
+	protected final int SERVER_PORT = 9999;
+	protected final String SERVER_IP = "127.0.0.1";
 
 	public static void main(String[] args) {
 
@@ -34,15 +39,15 @@ public class App implements ISpeedTestListener {
         speedTestSocket.startDownload(url);
 	}
 
-	public void connectToServer(double downloadRate) {
-		System.out.println(downloadRate);
-	}
-
 	@Override
+	//called when download/upload is complete
 	public void onCompletion(final SpeedTestReport report) {
-		//called when download/upload is complete
-		connectToServer(report.getTransferRateBit().doubleValue() * 0.000001);
+
+		double speedTestValue = report.getTransferRateBit().doubleValue() * 0.000001;
 		AppLogger.log(AppLogger.LogLevel.INFO, String.format("Download rate : %.1f Mbps",report.getTransferRateBit().doubleValue() * 0.000001));
+
+		new SocketClient().connectToServer(speedTestValue);
+
 	}
 
 	@Override
