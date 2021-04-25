@@ -20,6 +20,10 @@ dependencies {
 
 } 
 
+run {
+    standardInput = System.in
+}
+
 application {
 	mainClass = 'Client.App'
 }

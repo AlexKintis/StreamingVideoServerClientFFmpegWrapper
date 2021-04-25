@@ -3,6 +3,7 @@ package Server;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.ListIterator;
 
 public class User extends Server{
@@ -38,8 +39,6 @@ public class User extends Server{
             }
         }
 
-        highestResolution = FFmpegWrapper.videoResolution._720p;
-
         for(VideoFile file : App.getVideoFiles()) {
 
             var keys = new ArrayList<>(this.speedEquivalentResolutions.keySet());
@@ -54,4 +53,17 @@ public class User extends Server{
 
     }
 
+    public ArrayList<VideoFile> getFiles() {
+        return this.files;
+    }
+
+    public ArrayList<String> getDinstictiveFileNames() {
+
+        ArrayList<String> filenames = new ArrayList<>();
+        files.forEach(file -> filenames.add(file.getName().split("\\-")[0]));
+
+        HashSet<String> hashSet = new HashSet<>(filenames);
+
+        return new ArrayList<String>(hashSet);
+    }
 }

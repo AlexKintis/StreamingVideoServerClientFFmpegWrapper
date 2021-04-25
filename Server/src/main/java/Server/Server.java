@@ -1,11 +1,13 @@
 package Server;
 
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -13,9 +15,9 @@ import java.util.TreeMap;
 public class Server extends App {
 
     private ServerSocket server = null;
-    private Socket socket = null;
-    private ObjectInputStream ois = null;
-    private ObjectOutputStream oos = null;
+    private static Socket socket = null;
+    private static ObjectInputStream ois = null;
+    private static ObjectOutputStream oos = null;
 
     protected SortedMap<FFmpegWrapper.videoResolution, HashMap<String, Integer>> speedEquivalentResolutions = new TreeMap<>();
 
@@ -46,9 +48,7 @@ public class Server extends App {
                     User user = new User((BigDecimal)ois.readObject());
                     AppLogger.log(AppLogger.LogLevel.INFO, String.format("Client connection to server is [%f kbps | %f Mbps]", user.userDownloadRatekbps, user.userDownloadRatekbps * 0.001) );
 
-                    // View which videos can user ask for stream
-
-                    //oos.writeObject("Hey From server");
+                    startVideoSelectionProcess(user);
 
                     ois.close();
                     oos.close();
@@ -58,11 +58,55 @@ public class Server extends App {
 
             }
 
-        } catch (IOException | ClassNotFoundException ioex) {
+        } catch (Exception ioex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
             System.exit(1);
         }
 
+
+    }
+
+    private void startVideoSelectionProcess(User user) throws Exception {
+
+        StringBuilder videoFileName = new StringBuilder();
+
+        // Get video name
+        oos.writeObject("Which video you would like to see : "); // 1
+        oos.writeObject(user.getDinstictiveFileNames()); // 2
+
+        videoFileName.append((String)ois.readObject());
+
+        // Get video Resolution
+        oos.writeObject("In which resolution : "); // 3
+
+        //.listIterator()
+        ArrayList<Integer> resolutions = new ArrayList<>();
+
+        for(var resolution : FFmpegWrapper.videoResolution.values()) {
+            String temp = resolution.name().substring(1, resolution.name().length() - 1);
+            int numTemp = Integer.valueOf(temp);
+            resolutions.add(numTemp);
+        }
+
+        Collections.sort(resolutions, Collections.reverseOrder());
+
+        oos.writeObject(resolutions); // 4
+        videoFileName.append("-" + (String)ois.readObject());
+
+        // Get video Codec
+        oos.writeObject("In which codec : "); // 5
+
+
+        ArrayList<String> codecs = new ArrayList<>();
+
+        for(var codec : FFmpegWrapper.videoType.values())
+            codecs.add(codec.name());
+
+        oos.writeObject(codecs); // 6
+
+        videoFileName.append("p." + (String)ois.readObject());
+
+        System.out.println(videoFileName);
 
     }
 

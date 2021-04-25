@@ -4,12 +4,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class SocketClient extends App {
 
-    private Socket socket = null;
-    private ObjectOutputStream oos;
-    private ObjectInputStream ois;
+    private static Socket socket = null;
+    private static ObjectOutputStream oos;
+    private static ObjectInputStream ois;
+    private Scanner sc = new Scanner(System.in);
 
     SocketClient() {
         AppLogger.log(AppLogger.LogLevel.INFO, "Client is starting");
@@ -27,6 +30,8 @@ public class SocketClient extends App {
 
             oos.writeObject(downloadRate);
 
+            startVideoSelectionProcess();
+
             oos.close();
             ois.close();
             socket.close();
@@ -37,6 +42,42 @@ public class SocketClient extends App {
         } finally {
 
         }
+    }
+
+    private void startVideoSelectionProcess() throws Exception {
+
+        String choice = "";
+
+        // Video name
+        System.out.println(ois.readObject());
+        var videoNames = (ArrayList<String>)ois.readObject();
+        videoNames .forEach(k -> System.out.format("%d. %s\n", videoNames.indexOf(k) + 1 ,k));
+
+        choice = sc.nextLine();
+
+        choice = videoNames.get(Integer.parseInt(choice) - 1);
+        oos.writeObject(choice);
+
+        // Resolution
+        System.out.println((String)ois.readObject());
+        var videoResolutions = (ArrayList<Integer>)ois.readObject();
+        videoResolutions.forEach(k -> System.out.format("%d. %s\n", videoResolutions.indexOf(k) + 1 ,k));
+
+        choice = sc.nextLine();
+        oos.writeObject(String.valueOf(videoResolutions.get(Integer.parseInt(choice) - 1)));
+
+
+        // codec
+        System.out.println((String)ois.readObject());
+
+        var videoCodecs = (ArrayList<String>)ois.readObject();
+        videoCodecs.forEach(k -> System.out.format("%d. %s\n", videoCodecs.indexOf(k) + 1 ,k));
+
+        choice = sc.nextLine();
+        choice = videoCodecs.get(Integer.parseInt(choice) - 1);
+
+        oos.writeObject(choice);
+
     }
 
 }
