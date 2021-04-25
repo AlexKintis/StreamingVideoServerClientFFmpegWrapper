@@ -1,6 +1,5 @@
 package Server;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -9,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -18,7 +16,6 @@ import org.apache.commons.io.FilenameUtils;
 public class FilesHandler {
 
     private ArrayList<VideoFile> videoFiles = new ArrayList<VideoFile>();
-    private boolean allFilesAreConverted;
 
     FilesHandler() {
         App.videosFolder = Paths.get(App.folderName).normalize().toAbsolutePath();

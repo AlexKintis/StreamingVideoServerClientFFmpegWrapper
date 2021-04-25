@@ -8,6 +8,8 @@ public class App{
     public static final String folderName = "videos";
 	public static java.nio.file.Path videosFolder;
 
+	protected final int SERVER_PORT = 9999;
+
 	public static void main(String[] args) {
 		new App().startProcess();
 	}
@@ -20,8 +22,7 @@ public class App{
 
 		handler.startVideosConversionProcess(videoFiles);
 
-		Server server = new Server();
-		server.start();
+		new Server().start();
 
 	}
 
@@ -29,7 +30,7 @@ public class App{
 		videoFiles.forEach(x -> System.out.println(x.toString()));
 	}
 
-	public ArrayList<VideoFile> getVideoFiles() {
+	public static ArrayList<VideoFile> getVideoFiles() {
 		return videoFiles;
 	}
 

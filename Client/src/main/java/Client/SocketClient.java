@@ -2,6 +2,7 @@ package Client;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.net.Socket;
 
 public class SocketClient extends App {
@@ -14,7 +15,7 @@ public class SocketClient extends App {
         AppLogger.log(AppLogger.LogLevel.INFO, "Client is starting");
     }
 
-    public void connectToServer(double downloadRate) {
+    public void connectToServer(BigDecimal downloadRate) {
 
         try {
             AppLogger.log(AppLogger.LogLevel.INFO, String.format("Client is trying to connect to %s:%d", super.SERVER_IP, super.SERVER_PORT));
@@ -24,8 +25,7 @@ public class SocketClient extends App {
             oos = new ObjectOutputStream(socket.getOutputStream());
             ois = new ObjectInputStream(socket.getInputStream());
 
-            oos.writeObject("Hey");
-            System.out.println((String)ois.readObject());
+            oos.writeObject(downloadRate);
 
             oos.close();
             ois.close();

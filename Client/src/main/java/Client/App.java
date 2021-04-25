@@ -1,5 +1,7 @@
 package Client;
 
+import java.math.BigDecimal;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,8 +45,9 @@ public class App implements ISpeedTestListener {
 	//called when download/upload is complete
 	public void onCompletion(final SpeedTestReport report) {
 
-		double speedTestValue = report.getTransferRateBit().doubleValue() * 0.000001;
-		AppLogger.log(AppLogger.LogLevel.INFO, String.format("Download rate : %.1f Mbps",report.getTransferRateBit().doubleValue() * 0.000001));
+		//double speedTestValue = report.getTransferRateBit().doubleValue() * 0.000001;
+		BigDecimal speedTestValue = report.getTransferRateBit();
+		AppLogger.log(AppLogger.LogLevel.INFO, String.format("Download rate : %.1f Mbps", speedTestValue.doubleValue() * 0.000001));
 
 		new SocketClient().connectToServer(speedTestValue);
 
