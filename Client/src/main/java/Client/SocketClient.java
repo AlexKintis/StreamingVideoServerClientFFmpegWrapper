@@ -78,6 +78,18 @@ public class SocketClient extends App {
 
         oos.writeObject(choice);
 
+        // Stream Method
+        System.out.println((String)ois.readObject());
+
+        var streamMethod = (ArrayList<String>)ois.readObject();
+
+        streamMethod.forEach(k -> System.out.format("%d. %s\n", streamMethod.indexOf(k) + 1 ,k));
+
+        choice = sc.nextLine();
+        choice = streamMethod.get(Integer.parseInt(choice) - 1);
+
+        System.out.println("Choice :" + choice);
+
     }
 
 }

@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+//import org.apache.tools.ant.taskdefs.TempFile;
+
 public class Server extends App {
 
     private ServerSocket server = null;
@@ -74,7 +76,9 @@ public class Server extends App {
         oos.writeObject("Which video you would like to see : "); // 1
         oos.writeObject(user.getDinstictiveFileNames()); // 2
 
-        videoFileName.append((String)ois.readObject());
+        String choosedFilename = (String)ois.readObject();
+
+        videoFileName.append(choosedFilename);
 
         // Get video Resolution
         oos.writeObject("In which resolution : "); // 3
@@ -88,6 +92,15 @@ public class Server extends App {
             resolutions.add(numTemp);
         }
 
+        ArrayList<VideoFile> tempUserFiles = new ArrayList<>();
+        user.getFiles().forEach(k -> {
+                if(k.getName().contains(videoFileName.toString())) {
+                    tempUserFiles.add(k);
+                }
+            });
+
+        resolutions.subList(resolutions.indexOf(tempUserFiles.get(0).getHeight())+1, resolutions.size()).clear();
+
         Collections.sort(resolutions, Collections.reverseOrder());
 
         oos.writeObject(resolutions); // 4
@@ -95,7 +108,6 @@ public class Server extends App {
 
         // Get video Codec
         oos.writeObject("In which codec : "); // 5
-
 
         ArrayList<String> codecs = new ArrayList<>();
 
@@ -107,6 +119,19 @@ public class Server extends App {
         videoFileName.append("p." + (String)ois.readObject());
 
         candidateForStream = user.getSelectedVideo(videoFileName.toString());
+        System.out.println(videoFileName);
+
+        // Ask for streaming protocol
+        oos.writeObject("In wich streaming protocol : "); // 7
+
+        ArrayList<String> streamProtArrList = new ArrayList<>();
+
+        for(var streamProtocol : FFmpegWrapper.streamingProtocol.values())
+            streamProtArrList.add(streamProtocol.name());
+
+        streamProtArrList.set(streamProtArrList.indexOf("RTP_UDP"), "RTP/UDP");
+
+        oos.writeObject(streamProtArrList);
 
         System.out.println(candidateForStream.getPath());
 

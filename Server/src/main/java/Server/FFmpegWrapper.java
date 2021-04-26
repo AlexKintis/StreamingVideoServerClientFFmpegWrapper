@@ -16,6 +16,7 @@ public class FFmpegWrapper {
 
     protected enum videoType { avi, mp4, mkv }
     protected enum videoResolution { _240p, _360p, _480p, _720p, _1080p }
+    protected enum streamingProtocol { TCP, UDP, RTP_UDP };
 
     private void initiateFFprobe(String path) throws IOException {
         ffprobe = new FFprobe(path);
@@ -49,7 +50,6 @@ public class FFmpegWrapper {
 
         final int videoResolution = Integer.parseInt(resolution.toString().substring(1, resolution.toString().length() - 1));
         final double originalVideoAspectRatio = file.getWidth() / (double)file.getHeight() ;
-
 
         int outputVideoWidth = (int)Math.floor(videoResolution * originalVideoAspectRatio);
 

@@ -75,16 +75,16 @@ public class VideoFile {
         return this.path;
     }
 
-    public FFmpegWrapper.videoType getExtension() {
-        return this.extension;
-    }
-
     public int getHeight() {
         return this.height;
     }
 
     public int getWidth() {
         return this.width;
+    }
+
+    public FFmpegWrapper.videoType getExtension() {
+        return this.extension;
     }
 
     public FFmpegWrapper.videoResolution getResolution() {

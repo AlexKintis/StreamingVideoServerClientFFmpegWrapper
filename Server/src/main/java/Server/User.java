@@ -3,6 +3,7 @@ package Server;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.ListIterator;
 
@@ -52,6 +53,13 @@ public class User extends Server{
             }
         }
 
+        Collections.sort(downloadableFiles, new Comparator<VideoFile>() {
+                @Override
+                public int compare(VideoFile o1, VideoFile o2) {
+                    return Integer.valueOf(o2.getHeight()).compareTo(Integer.valueOf(o1.getHeight()));
+                }
+            });
+
     }
 
     public ArrayList<VideoFile> getFiles() {
@@ -60,15 +68,15 @@ public class User extends Server{
 
     public VideoFile getSelectedVideo(String filename) {
 
-        VideoFile video = null;
+        userSelectedFileForStream = null;
 
         for(VideoFile file : downloadableFiles) {
             if(String.format("%s.%s",file.getName(), file.getExtension().name()).equals(filename)) {
-                video = file;
+                userSelectedFileForStream = file;
             }
         }
 
-        return video;
+        return userSelectedFileForStream;
     }
 
     public ArrayList<String> getDinstictiveFileNames() {
