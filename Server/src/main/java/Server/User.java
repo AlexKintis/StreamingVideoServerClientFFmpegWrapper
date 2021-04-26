@@ -8,7 +8,8 @@ import java.util.ListIterator;
 
 public class User extends Server{
 
-    private ArrayList<VideoFile> files = new ArrayList<>();
+    private ArrayList<VideoFile> downloadableFiles = new ArrayList<>();
+    private VideoFile userSelectedFileForStream;
     protected BigDecimal userDownloadRateBits;
     protected double userDownloadRatekbps;
     protected FFmpegWrapper.videoResolution highestResolution;
@@ -47,20 +48,33 @@ public class User extends Server{
             keys.subList(0, keys.indexOf(highestResolution)).clear();
 
             if(keys.contains(file.getResolution())) {
-                files.add(file);
+                downloadableFiles.add(file);
             }
         }
 
     }
 
     public ArrayList<VideoFile> getFiles() {
-        return this.files;
+        return this.downloadableFiles;
+    }
+
+    public VideoFile getSelectedVideo(String filename) {
+
+        VideoFile video = null;
+
+        for(VideoFile file : downloadableFiles) {
+            if(String.format("%s.%s",file.getName(), file.getExtension().name()).equals(filename)) {
+                video = file;
+            }
+        }
+
+        return video;
     }
 
     public ArrayList<String> getDinstictiveFileNames() {
 
         ArrayList<String> filenames = new ArrayList<>();
-        files.forEach(file -> filenames.add(file.getName().split("\\-")[0]));
+        downloadableFiles.forEach(file -> filenames.add(file.getName().split("\\-")[0]));
 
         HashSet<String> hashSet = new HashSet<>(filenames);
 

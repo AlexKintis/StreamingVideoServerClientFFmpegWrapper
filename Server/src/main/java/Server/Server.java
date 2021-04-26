@@ -19,6 +19,7 @@ public class Server extends App {
     private static ObjectOutputStream oos = null;
 
     protected SortedMap<FFmpegWrapper.videoResolution, HashMap<String, Integer>> speedEquivalentResolutions = new TreeMap<>();
+    private VideoFile candidateForStream;
 
     Server() {
        initializeSpeedEquivalentResolutions();
@@ -105,7 +106,9 @@ public class Server extends App {
 
         videoFileName.append("p." + (String)ois.readObject());
 
-        System.out.println(videoFileName);
+        candidateForStream = user.getSelectedVideo(videoFileName.toString());
+
+        System.out.println(candidateForStream.getPath());
 
     }
 
