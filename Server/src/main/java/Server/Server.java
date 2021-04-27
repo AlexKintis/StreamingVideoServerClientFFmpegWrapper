@@ -3,8 +3,10 @@ package Server;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,117 +26,13 @@ public class Server extends App {
     private VideoFile candidateForStream;
 
     Server() {
-       initializeSpeedEquivalentResolutions();
-    }
-
-    public void start() {
-
-        AppLogger.log(AppLogger.LogLevel.INFO, "Server is starting");
-
-        try {
-
-            server = new ServerSocket(super.SERVER_PORT);
-
-            AppLogger.log(AppLogger.LogLevel.INFO, "Waiting for client request");
-
-            while (true) {
-
-                socket = server.accept();
-
-                if(socket.isBound()) {
-                    AppLogger.log(AppLogger.LogLevel.INFO, "Client Connected");
-
-                    ois = new ObjectInputStream(socket.getInputStream());
-                    oos = new  ObjectOutputStream(socket.getOutputStream());
-
-                    User user = new User((BigDecimal)ois.readObject());
-                    AppLogger.log(AppLogger.LogLevel.INFO, String.format("Client connection to server is [%f kbps | %f Mbps]", user.userDownloadRatekbps, user.userDownloadRatekbps * 0.001) );
-
-                    startVideoSelectionProcess(user);
-
-                    ois.close();
-                    oos.close();
-                    socket.close();
-
-                }
-
-            }
-
-        } catch (Exception ioex) {
-            AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
-            System.exit(1);
+        try{
+            inetAddress = InetAddress.getByName(App.hostName);
+        } catch(UnknownHostException uhex) {
+            AppLogger.log(AppLogger.LogLevel.ERROR, uhex.getMessage());
         }
 
-
-    }
-
-    private void startVideoSelectionProcess(User user) throws Exception {
-
-        StringBuilder videoFileName = new StringBuilder();
-
-        // Get video name
-        oos.writeObject("Which video you would like to see : "); // 1
-        oos.writeObject(user.getDinstictiveFileNames()); // 2
-
-        String choosedFilename = (String)ois.readObject();
-
-        videoFileName.append(choosedFilename);
-
-        // Get video Resolution
-        oos.writeObject("In which resolution : "); // 3
-
-        //.listIterator()
-        ArrayList<Integer> resolutions = new ArrayList<>();
-
-        for(var resolution : FFmpegWrapper.videoResolution.values()) {
-            String temp = resolution.name().substring(1, resolution.name().length() - 1);
-            int numTemp = Integer.valueOf(temp);
-            resolutions.add(numTemp);
-        }
-
-        ArrayList<VideoFile> tempUserFiles = new ArrayList<>();
-        user.getFiles().forEach(k -> {
-                if(k.getName().contains(videoFileName.toString())) {
-                    tempUserFiles.add(k);
-                }
-            });
-
-        resolutions.subList(resolutions.indexOf(tempUserFiles.get(0).getHeight())+1, resolutions.size()).clear();
-
-        Collections.sort(resolutions, Collections.reverseOrder());
-
-        oos.writeObject(resolutions); // 4
-        videoFileName.append("-" + (String)ois.readObject());
-
-        // Get video Codec
-        oos.writeObject("In which codec : "); // 5
-
-        ArrayList<String> codecs = new ArrayList<>();
-
-        for(var codec : FFmpegWrapper.videoType.values())
-            codecs.add(codec.name());
-
-        oos.writeObject(codecs); // 6
-
-        videoFileName.append("p." + (String)ois.readObject());
-
-        candidateForStream = user.getSelectedVideo(videoFileName.toString());
-        System.out.println(videoFileName);
-
-        // Ask for streaming protocol
-        oos.writeObject("In wich streaming protocol : "); // 7
-
-        ArrayList<String> streamProtArrList = new ArrayList<>();
-
-        for(var streamProtocol : FFmpegWrapper.streamingProtocol.values())
-            streamProtArrList.add(streamProtocol.name());
-
-        streamProtArrList.set(streamProtArrList.indexOf("RTP_UDP"), "RTP/UDP");
-
-        oos.writeObject(streamProtArrList);
-
-        System.out.println(candidateForStream.getPath());
-
+        initializeSpeedEquivalentResolutions();
     }
 
     public void initializeSpeedEquivalentResolutions() {
@@ -178,6 +76,132 @@ public class Server extends App {
        hmap240.put("Minimum", 300);
 
        speedEquivalentResolutions.put(FFmpegWrapper.videoResolution._240p, hmap240);
+
+    }
+
+    public void start() {
+
+        AppLogger.log(AppLogger.LogLevel.INFO, "Server is starting");
+
+        try {
+
+            server = new ServerSocket(super.SERVER_PORT);
+
+            AppLogger.log(AppLogger.LogLevel.INFO, "Waiting for client request");
+
+            while (true) {
+
+                socket = server.accept();
+
+                if(socket.isBound()) {
+                    AppLogger.log(AppLogger.LogLevel.INFO, "Client Connected");
+
+                    ois = new ObjectInputStream(socket.getInputStream());
+                    oos = new  ObjectOutputStream(socket.getOutputStream());
+
+                    User user = new User((BigDecimal)ois.readObject());
+                    AppLogger.log(AppLogger.LogLevel.INFO, String.format("Client connection to server is [%f kbps | %f Mbps]", user.userDownloadRatekbps, user.userDownloadRatekbps * 0.001) );
+
+                    startVideoSelectionProcess(user);
+
+                    ois.close();
+                    oos.close();
+                    socket.close();
+
+                }
+
+            }
+
+        } catch (Exception ioex) {
+            AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
+            System.exit(1);
+        }
+
+
+    }
+
+    /*
+     *    < Initiate Socket Connection >
+     *    Ask user for which video wants to see (File, Resolution, codec)
+     *    and also asks for streaming protocol
+     */
+    private void startVideoSelectionProcess(User user) throws Exception {
+
+        StringBuilder videoFileName = new StringBuilder();
+
+        /*
+         *    Video Name
+         */
+        oos.writeObject("Which video you would like to see : "); // 1
+        oos.writeObject(user.getDinstictiveFileNames()); // 2
+
+        String choosedFilename = (String)ois.readObject();
+
+        videoFileName.append(choosedFilename);
+
+        /*
+         *    Video Resolution
+         */
+        oos.writeObject("In which resolution : "); // 3
+
+        ArrayList<Integer> resolutions = new ArrayList<>();
+
+        for(var resolution : FFmpegWrapper.videoResolution.values()) {
+            String temp = resolution.name().substring(1, resolution.name().length() - 1);
+            int numTemp = Integer.valueOf(temp);
+            resolutions.add(numTemp);
+        }
+
+        ArrayList<VideoFile> tempUserFiles = new ArrayList<>();
+        user.getFiles().forEach(k -> {
+                if(k.getName().contains(videoFileName.toString())) {
+                    tempUserFiles.add(k);
+                }
+            });
+
+        resolutions.subList(resolutions.indexOf(tempUserFiles.get(0).getHeight())+1, resolutions.size()).clear();
+
+        Collections.sort(resolutions, Collections.reverseOrder());
+
+        oos.writeObject(resolutions); // 4
+        videoFileName.append("-" + (String)ois.readObject());
+
+        /*
+         *    Video Codec
+         */
+        oos.writeObject("In which codec : "); // 5
+
+        ArrayList<String> codecs = new ArrayList<>();
+
+        for(var codec : FFmpegWrapper.videoType.values())
+            codecs.add(codec.name());
+
+        oos.writeObject(codecs); // 6
+
+        videoFileName.append("p." + (String)ois.readObject());
+
+        candidateForStream = user.getSelectedVideo(videoFileName.toString());
+        //System.out.println(videoFileName); // print Video path
+
+        /*
+         *    Streaming Protocol
+         */
+        oos.writeObject("In wich streaming protocol : "); // 7
+
+        ArrayList<String> streamProtArrList = new ArrayList<>();
+
+        for(var streamProtocol : FFmpegWrapper.streamingProtocol.values())
+            streamProtArrList.add(streamProtocol.name());
+
+        streamProtArrList.set(streamProtArrList.indexOf("RTP_UDP"), "RTP/UDP");
+
+        oos.writeObject(streamProtArrList);
+
+        String protocol = (String)ois.readObject();
+
+        //System.out.println(candidateForStream.getPath());
+
+        new FFmpegWrapper().streamVideo(candidateForStream, protocol);
 
     }
 

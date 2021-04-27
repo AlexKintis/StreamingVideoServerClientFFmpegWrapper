@@ -39,4 +39,8 @@ public class AppLogger {
         return log;
     }
 
+    public static Logger getLogger() {
+        return log;
+    }
+
 }

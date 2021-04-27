@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class SocketClient extends App {
 
@@ -88,7 +89,15 @@ public class SocketClient extends App {
         choice = sc.nextLine();
         choice = streamMethod.get(Integer.parseInt(choice) - 1);
 
-        System.out.println("Choice :" + choice);
+        oos.writeObject(choice);
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch(InterruptedException ex) {
+            AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
+        }
+
+        FFmpegWrapper.playVideo(choice);
 
     }
 

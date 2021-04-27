@@ -11,15 +11,16 @@ import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.model.SpeedTestError;
 
 public class App implements ISpeedTestListener {
+	//
+	// Socket attributes
+	protected static final int SERVER_PORT = 9999;
+	protected static final String SERVER_IP = "127.0.0.1";
+	protected static final int SERVER_VIDEO_PORT = 1234;
 
 	// SpeedTest attributes
 	static Logger log = LogManager.getLogger(Logger.class);
     private final static int SOCKET_TIMEOUT = 5000;
     private SpeedTestSocket speedTestSocket;
-
-	// Socket attributes
-	protected final int SERVER_PORT = 9999;
-	protected final String SERVER_IP = "127.0.0.1";
 
 	public static void main(String[] args) {
 

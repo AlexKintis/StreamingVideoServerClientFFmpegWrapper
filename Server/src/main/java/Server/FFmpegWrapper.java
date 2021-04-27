@@ -2,6 +2,9 @@ package Server;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.FFmpegExecutor;
@@ -11,6 +14,9 @@ import net.bramp.ffmpeg.probe.FFmpegStream;
 
 public class FFmpegWrapper {
 
+    private final static String FFMPEG_PATH = "/usr/bin/ffmpeg";
+    private final static String FFPROBE_PATH = "/usr/bin/ffprobe";
+
     private static FFmpeg ffmpeg = null;
     private static FFprobe ffprobe = null;
 
@@ -18,12 +24,12 @@ public class FFmpegWrapper {
     protected enum videoResolution { _240p, _360p, _480p, _720p, _1080p }
     protected enum streamingProtocol { TCP, UDP, RTP_UDP };
 
-    private void initiateFFprobe(String path) throws IOException {
-        ffprobe = new FFprobe(path);
+    private void initiateFFprobe() throws IOException {
+        ffprobe = new FFprobe(FFPROBE_PATH);
     }
 
-    private void initiateFFmpeg(String path) throws IOException {
-        ffmpeg = new FFmpeg(path);
+    private void initiateFFmpeg() throws IOException {
+        ffmpeg = new FFmpeg(FFMPEG_PATH);
     }
 
     public static java.util.Map<String, Integer> getFileResolution(java.nio.file.Path path) {
@@ -31,7 +37,7 @@ public class FFmpegWrapper {
         java.util.Map<String, Integer> resolution = new java.util.HashMap<String, Integer>();
 
         try {
-            new FFmpegWrapper().initiateFFprobe("/usr/bin/ffprobe");
+            new FFmpegWrapper().initiateFFprobe();
 
             FFmpegStream stream = ffprobe.probe(path.toString()).getStreams().get(0);
 
@@ -58,7 +64,7 @@ public class FFmpegWrapper {
         }
 
         try {
-            new FFmpegWrapper().initiateFFmpeg("/usr/bin/ffmpeg");
+            new FFmpegWrapper().initiateFFmpeg();
             FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(file.getPath().toAbsolutePath().toString())
                 .addOutput(outputFile.toAbsolutePath().toString())
@@ -71,6 +77,44 @@ public class FFmpegWrapper {
         } catch (IOException ioex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
             System.exit(1);
+        }
+
+    }
+
+    public void streamVideo(VideoFile video, String protocol) {
+
+        ProcessBuilder pb = null;
+        List<String> commandArgs = new ArrayList<>();
+
+        commandArgs.add(FFMPEG_PATH);
+        commandArgs.addAll(Arrays.asList("-i", video.getPath().toAbsolutePath().toString())); // Filepath
+        commandArgs.addAll(Arrays.asList("-f", video.getExtension().name()));
+
+        /* TCP, UDP, RTP/UDP */
+        try {
+
+            switch(protocol) {
+                case "TCP":
+                    commandArgs.add(String.format("tcp://%s:%d?listen", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
+                    break;
+                case "UDP":
+                    commandArgs.add(String.format("udp://%s:%d", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
+                    break;
+                case "RTP/UDP":
+                    break;
+                default:
+                    //AppLogger.log(AppLogger.LogLevel.ERROR, );
+                    throw new Exception("A protocol must be specified between \"TCP,UDP,RTP/UDP\"");
+            }
+
+            pb = new ProcessBuilder(commandArgs);
+            System.out.println(pb.command());
+            pb.inheritIO();
+
+            pb.start();
+
+        } catch(Exception ex) {
+            AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
         }
 
     }
