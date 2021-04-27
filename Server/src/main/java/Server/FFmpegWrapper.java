@@ -86,9 +86,23 @@ public class FFmpegWrapper {
         ProcessBuilder pb = null;
         List<String> commandArgs = new ArrayList<>();
 
+        String videoCodecName;
+        //String  (video.getExtension().name().equals("mp4") ? "" : video.getExtension().name())
+        switch(video.getExtension().name()) {
+            case "mp4":
+                videoCodecName = "mpegts";
+                break;
+            case "mkv":
+                videoCodecName = "matroska";
+                break;
+            default:
+                videoCodecName = "avi";
+                break;
+        }
+
         commandArgs.add(FFMPEG_PATH);
         commandArgs.addAll(Arrays.asList("-i", video.getPath().toAbsolutePath().toString())); // Filepath
-        commandArgs.addAll(Arrays.asList("-f", video.getExtension().name()));
+        commandArgs.addAll(Arrays.asList("-f", videoCodecName));
 
         /* TCP, UDP, RTP/UDP */
         try {
@@ -103,7 +117,6 @@ public class FFmpegWrapper {
                 case "RTP/UDP":
                     break;
                 default:
-                    //AppLogger.log(AppLogger.LogLevel.ERROR, );
                     throw new Exception("A protocol must be specified between \"TCP,UDP,RTP/UDP\"");
             }
 
