@@ -109,12 +109,11 @@ public class Server extends App {
                     ois.close();
                     oos.close();
                     socket.close();
-                    /*
+
                     if(FFmpegProcess != null) {
                         AppLogger.log(AppLogger.LogLevel.INFO, "FFmpeg Process Stopped!");
                         FFmpegProcess.destroy();
                     }
-                    */
 
                 }
 

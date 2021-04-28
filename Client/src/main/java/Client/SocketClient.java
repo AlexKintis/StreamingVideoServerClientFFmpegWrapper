@@ -39,12 +39,10 @@ public class SocketClient extends App {
             ois.close();
             socket.close();
 
-            /*
             if(FFmpegProccess != null) {
                 AppLogger.log(AppLogger.LogLevel.INFO, "FFplay Process Stopped!");
                 FFmpegProccess.destroy();
             }
-            */
 
         } catch(Exception ioex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
