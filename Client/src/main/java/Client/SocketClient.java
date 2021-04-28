@@ -97,7 +97,13 @@ public class SocketClient extends App {
             AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
         }
 
-        FFmpegWrapper.playVideo(choice);
+        FFmpegWrapper.playVideo(choice, ois);
+
+        /*
+        if(FFmpegWrapper.rdpFile.exists()) {
+            FFmpegWrapper.rdpFile.delete();
+        }
+        */
 
     }
 

@@ -1,5 +1,6 @@
 package Server;
 
+import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
@@ -194,14 +195,20 @@ public class Server extends App {
             streamProtArrList.add(streamProtocol.name());
 
         streamProtArrList.set(streamProtArrList.indexOf("RTP_UDP"), "RTP/UDP");
+        streamProtArrList.add("None");
 
         oos.writeObject(streamProtArrList);
 
         String protocol = (String)ois.readObject();
 
-        //System.out.println(candidateForStream.getPath());
+        new FFmpegWrapper().streamVideo(candidateForStream, protocol, oos);
 
-        new FFmpegWrapper().streamVideo(candidateForStream, protocol);
+        /* Delete rdp file if exists */
+        File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
+
+        if(rdpFile.exists()) {
+            rdpFile.delete();
+        }
 
     }
 

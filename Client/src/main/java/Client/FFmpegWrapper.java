@@ -1,14 +1,20 @@
 package Client;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FFmpegWrapper {
 
-    private final static String FFPLAY_PATH = "/usr/bin/ffplay";
+    private static final String FFPLAY_PATH = "/usr/bin/ffplay";
+    protected static File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
 
-    public static void playVideo(String protocol) {
+    public static void playVideo(String protocol, ObjectInputStream ois) {
 
         ProcessBuilder pb = null;
         List<String> commandArgs = new ArrayList<>();
@@ -26,6 +32,13 @@ public class FFmpegWrapper {
                     commandArgs.add(String.format("udp://%s:%d", App.SERVER_IP, App.SERVER_VIDEO_PORT));
                     break;
                 case "RTP/UDP":
+
+                    Files.write(rdpFile.toPath(), (byte[])ois.readObject()); // Receive Rdp File
+
+                    // ffplay -protocol_whitelist file,rtp,udp -i video.sdp
+                    commandArgs.addAll(Arrays.asList("-protocol_whitelist", "file,rtp,udp"));
+                    commandArgs.addAll(Arrays.asList("-i", "video.sdp"));
+
                     break;
             }
 
@@ -33,19 +46,11 @@ public class FFmpegWrapper {
 
             pb.inheritIO();
 
-            /*
-            pb.redirectOutput(Redirect.appendTo(new PrintStream(new OutputStream(){
-                    public void write(int b) {
+            Process process = pb.start();
+            process.waitFor();
 
-                    }
-                })));
-                */
-
-            //printCommand(pb);
-            pb.start();
-
-        } catch(IOException ioex) {
-            AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());
+        } catch(IOException | ClassNotFoundException | InterruptedException ex) {
+            AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
             System.exit(1);
         }
 

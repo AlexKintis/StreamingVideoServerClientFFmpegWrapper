@@ -1,6 +1,10 @@
 package Server;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,14 +85,13 @@ public class FFmpegWrapper {
 
     }
 
-    public void streamVideo(VideoFile video, String protocol) {
+    public void streamVideo(VideoFile video, String protocol, ObjectOutputStream oos) {
 
         ProcessBuilder pb = null;
         List<String> commandArgs = new ArrayList<>();
 
         String videoCodecName;
-        //String  (video.getExtension().name().equals("mp4") ? "" : video.getExtension().name())
-        switch(video.getExtension().name()) {
+        switch(video.getExtension().name()) { // change video codec name to ffmpeg known formats
             case "mp4":
                 videoCodecName = "mpegts";
                 break;
@@ -100,31 +103,48 @@ public class FFmpegWrapper {
                 break;
         }
 
-        commandArgs.add(FFMPEG_PATH);
-        commandArgs.addAll(Arrays.asList("-i", video.getPath().toAbsolutePath().toString())); // Filepath
-        commandArgs.addAll(Arrays.asList("-f", videoCodecName));
-
         /* TCP, UDP, RTP/UDP */
         try {
 
+            commandArgs.add(FFMPEG_PATH);
+            commandArgs.addAll(Arrays.asList("-i", video.getPath().toAbsolutePath().toString())); // Filepath
+
             switch(protocol) {
                 case "TCP":
+                    commandArgs.addAll(Arrays.asList("-f", videoCodecName));
                     commandArgs.add(String.format("tcp://%s:%d?listen", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
                     break;
                 case "UDP":
+                    commandArgs.addAll(Arrays.asList("-f", videoCodecName));
                     commandArgs.add(String.format("udp://%s:%d", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
                     break;
                 case "RTP/UDP":
+                    commandArgs.add(1, "-re"); // add -re after the command
+                    commandArgs.add("-an");
+                    //commandArgs.addAll(Arrays.asList("-c:v", "copy")); // Does not work
+                    commandArgs.addAll(Arrays.asList("-f", "rtp"));
+                    commandArgs.addAll(Arrays.asList("-sdp_file", "video.sdp"));
+                    commandArgs.add(String.format("rtp://%s:%d", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
+
                     break;
                 default:
                     throw new Exception("A protocol must be specified between \"TCP,UDP,RTP/UDP\"");
             }
 
             pb = new ProcessBuilder(commandArgs);
-            System.out.println(pb.command());
             pb.inheritIO();
 
-            pb.start();
+            if(protocol.equals("RTP/UDP")) {
+
+                Process process = pb.start();
+
+                File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
+
+                oos.writeObject(Files.readAllBytes(rdpFile.toPath())); // Sending rtp description file to client
+
+                process.waitFor();
+
+            }
 
         } catch(Exception ex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
