@@ -15,6 +15,8 @@ public class SocketClient extends App {
     private static ObjectInputStream ois;
     private Scanner sc = new Scanner(System.in);
 
+    protected static Process FFmpegProccess;
+
     SocketClient() {
         AppLogger.log(AppLogger.LogLevel.INFO, "Client is starting");
     }
@@ -36,6 +38,13 @@ public class SocketClient extends App {
             oos.close();
             ois.close();
             socket.close();
+
+            /*
+            if(FFmpegProccess != null) {
+                AppLogger.log(AppLogger.LogLevel.INFO, "FFplay Process Stopped!");
+                FFmpegProccess.destroy();
+            }
+            */
 
         } catch(Exception ioex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ioex.getMessage());

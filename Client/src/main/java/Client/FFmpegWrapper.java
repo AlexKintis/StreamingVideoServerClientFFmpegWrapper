@@ -46,8 +46,8 @@ public class FFmpegWrapper {
 
             pb.inheritIO();
 
-            Process process = pb.start();
-            process.waitFor();
+            SocketClient.FFmpegProccess = pb.start();
+            SocketClient.FFmpegProccess.waitFor();
 
         } catch(IOException | ClassNotFoundException | InterruptedException ex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());

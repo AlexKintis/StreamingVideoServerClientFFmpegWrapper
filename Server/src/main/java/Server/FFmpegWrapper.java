@@ -136,14 +136,18 @@ public class FFmpegWrapper {
 
             if(protocol.equals("RTP/UDP")) {
 
-                Process process = pb.start();
+                Server.FFmpegProcess= pb.start();
 
                 File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
 
                 oos.writeObject(Files.readAllBytes(rdpFile.toPath())); // Sending rtp description file to client
 
-                process.waitFor();
+                Server.FFmpegProcess.waitFor();
 
+            } else {
+
+                Server.FFmpegProcess= pb.start();
+                Server.FFmpegProcess.waitFor();
             }
 
         } catch(Exception ex) {

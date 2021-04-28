@@ -25,6 +25,7 @@ public class Server extends App {
 
     protected SortedMap<FFmpegWrapper.videoResolution, HashMap<String, Integer>> speedEquivalentResolutions = new TreeMap<>();
     private VideoFile candidateForStream;
+    protected static Process FFmpegProcess;
 
     Server() {
         try{
@@ -108,6 +109,12 @@ public class Server extends App {
                     ois.close();
                     oos.close();
                     socket.close();
+                    /*
+                    if(FFmpegProcess != null) {
+                        AppLogger.log(AppLogger.LogLevel.INFO, "FFmpeg Process Stopped!");
+                        FFmpegProcess.destroy();
+                    }
+                    */
 
                 }
 
