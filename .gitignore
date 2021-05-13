@@ -8,4 +8,4 @@ build
 .gradle
 /Server/videos/
 Server/video.sdp
- Client/video.sdp
+Client/video.sdp
