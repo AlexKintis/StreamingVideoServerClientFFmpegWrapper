@@ -212,9 +212,9 @@ public class Server extends App {
         /* Delete rdp file if exists */
         File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
 
-        if(rdpFile.exists()) {
-            rdpFile.delete();
-        }
+        // if(rdpFile.exists()) {
+        //     rdpFile.delete();
+        // }
 
     }
 

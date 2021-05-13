@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>server</name>
+	<name>Server</name>
 	<comment>Project server created by Buildship.</comment>
 	<projects>
 	</projects>
@@ -22,7 +22,7 @@
 	</natures>
 	<filteredResources>
 		<filter>
-			<id>1619105649439</id>
+			<id>0</id>
 			<name></name>
 			<type>30</type>
 			<matcher>

@@ -106,11 +106,9 @@ public class SocketClient extends App {
 
         FFmpegWrapper.playVideo(choice, ois);
 
-        /*
-        if(FFmpegWrapper.rdpFile.exists()) {
-            FFmpegWrapper.rdpFile.delete();
-        }
-        */
+        // if(FFmpegWrapper.rdpFile.exists()) {
+        //     FFmpegWrapper.rdpFile.delete();
+        // }
 
     }
 
