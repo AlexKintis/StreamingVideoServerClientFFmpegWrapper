@@ -14,22 +14,46 @@ public class FFmpegWrapper extends Thread {
     private static final String FFPLAY_PATH = "/usr/bin/ffplay";
     protected static File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
 
-    public static void playVideo(String protocol, ObjectInputStream ois) {
+    public static void playVideo(String protocol, ObjectInputStream ois, int selectedVideoResolution) {
 
         ProcessBuilder pb = null;
         List<String> commandArgs = new ArrayList<>();
 
         commandArgs.add(FFPLAY_PATH);
 
+        if(protocol.equals("None")) {
+            switch(selectedVideoResolution) {
+                case 240:
+                    protocol = "TCP";
+                    break;
+                case 360:
+                    protocol = "UDP";
+                    break;
+                case 480:
+                    protocol = "UDP";
+                    break;
+                case 720:
+                    protocol = "RTP/UDP";
+                case 1080:
+                    protocol = "RTP/UDP";
+                    break;
+            }
+        }
+
+
         try {
+
+            final String message = "Protocol used : ";
 
             switch(protocol) {
                 case "TCP":
                     //ffplay tcp://127.0.0.1:1234
                     commandArgs.add(String.format("tcp://%s:%d", App.SERVER_IP, App.SERVER_VIDEO_PORT));
+                    AppLogger.log(AppLogger.LogLevel.INFO, message + protocol);
                     break;
                 case "UDP":
                     commandArgs.add(String.format("udp://%s:%d", App.SERVER_IP, App.SERVER_VIDEO_PORT));
+                    AppLogger.log(AppLogger.LogLevel.INFO, message + protocol);
                     break;
                 case "RTP/UDP":
 
@@ -39,6 +63,8 @@ public class FFmpegWrapper extends Thread {
                     commandArgs.addAll(Arrays.asList("-protocol_whitelist", "file,rtp,udp"));
                     commandArgs.addAll(Arrays.asList("-i", "video.sdp"));
 
+                    AppLogger.log(AppLogger.LogLevel.INFO, message + protocol);
+
                     break;
             }
 
@@ -46,11 +72,13 @@ public class FFmpegWrapper extends Thread {
 
             pb.inheritIO();
 
-            synchronized (pb){
-                try{
-                    pb.wait(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            if(protocol.equals("RTP/UDP")) {
+                synchronized (pb){
+                    try{
+                        pb.wait(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

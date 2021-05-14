@@ -103,6 +103,25 @@ public class FFmpegWrapper extends Thread {
                 break;
         }
 
+        if(protocol.equals("None")) {
+            switch(video.getHeight()) {
+                case 240:
+                    protocol = "TCP";
+                    break;
+                case 360:
+                    protocol = "UDP";
+                    break;
+                case 480:
+                    protocol = "UDP";
+                    break;
+                case 720:
+                    protocol = "RTP/UDP";
+                case 1080:
+                    protocol = "RTP/UDP";
+                    break;
+            }
+        }
+
         /* TCP, UDP, RTP/UDP */
         try {
 
@@ -125,20 +144,19 @@ public class FFmpegWrapper extends Thread {
                     commandArgs.addAll(Arrays.asList("-f", "rtp"));
                     commandArgs.addAll(Arrays.asList("-sdp_file", "video.sdp"));
                     commandArgs.add(String.format("rtp://%s:%d", App.inetAddress.getHostAddress(), App.SERVER_VIDEO_PORT));
-
                     break;
                 default:
-                    throw new Exception("A protocol must be specified between \"TCP,UDP,RTP/UDP\"");
+                    throw new Exception("(Unexpected Error) A protocol must be specified between \"TCP,UDP,RTP/UDP\"");
             }
 
             pb = new ProcessBuilder(commandArgs);
             pb.inheritIO();
 
+            Process process = pb.start();
+
             if(protocol.equals("RTP/UDP")) {
 
                 File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
-
-                Process process = pb.start();
 
                 synchronized (pb){
                     try{
@@ -150,9 +168,9 @@ public class FFmpegWrapper extends Thread {
 
                 oos.writeObject(Files.readAllBytes(rdpFile.toPath())); // Sending rtp description file to client
 
-                process.waitFor();
-
             }
+
+            process.waitFor();
 
         } catch(Exception ex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());

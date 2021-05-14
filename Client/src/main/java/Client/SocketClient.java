@@ -55,6 +55,7 @@ public class SocketClient extends App {
     private void startVideoSelectionProcess() throws Exception {
 
         String choice = "";
+        int selectedVideoResolution;
 
         // Video name
         System.out.println(ois.readObject());
@@ -72,7 +73,8 @@ public class SocketClient extends App {
         videoResolutions.forEach(k -> System.out.format("%d. %s\n", videoResolutions.indexOf(k) + 1 ,k));
 
         choice = sc.nextLine();
-        oos.writeObject(String.valueOf(videoResolutions.get(Integer.parseInt(choice) - 1)));
+        selectedVideoResolution = videoResolutions.get(Integer.parseInt(choice) - 1);
+        oos.writeObject(String.valueOf(selectedVideoResolution));
 
 
         // codec
@@ -98,7 +100,7 @@ public class SocketClient extends App {
 
         oos.writeObject(choice);
 
-        FFmpegWrapper.playVideo(choice, ois);
+        FFmpegWrapper.playVideo(choice, ois, selectedVideoResolution);
 
         if(FFmpegWrapper.rdpFile.exists()) {
             FFmpegWrapper.rdpFile.delete();
