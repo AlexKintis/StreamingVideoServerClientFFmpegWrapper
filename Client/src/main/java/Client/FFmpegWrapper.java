@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FFmpegWrapper {
+public class FFmpegWrapper extends Thread {
 
     private static final String FFPLAY_PATH = "/usr/bin/ffplay";
     protected static File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
@@ -45,6 +45,14 @@ public class FFmpegWrapper {
             pb = new ProcessBuilder(commandArgs);
 
             pb.inheritIO();
+
+            synchronized (pb){
+                try{
+                    pb.wait(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             SocketClient.FFmpegProccess = pb.start();
             SocketClient.FFmpegProccess.waitFor();

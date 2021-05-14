@@ -4,9 +4,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 public class SocketClient extends App {
 
@@ -98,17 +98,11 @@ public class SocketClient extends App {
 
         oos.writeObject(choice);
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch(InterruptedException ex) {
-            AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
-        }
-
         FFmpegWrapper.playVideo(choice, ois);
 
-        // if(FFmpegWrapper.rdpFile.exists()) {
-        //     FFmpegWrapper.rdpFile.delete();
-        // }
+        if(FFmpegWrapper.rdpFile.exists()) {
+            FFmpegWrapper.rdpFile.delete();
+        }
 
     }
 

@@ -16,7 +16,7 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegStream;
 
-public class FFmpegWrapper {
+public class FFmpegWrapper extends Thread {
 
     private final static String FFMPEG_PATH = "/usr/bin/ffmpeg";
     private final static String FFPROBE_PATH = "/usr/bin/ffprobe";
@@ -136,18 +136,22 @@ public class FFmpegWrapper {
 
             if(protocol.equals("RTP/UDP")) {
 
-                Server.FFmpegProcess= pb.start();
-
                 File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
+
+                Process process = pb.start();
+
+                synchronized (pb){
+                    try{
+                        pb.wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 oos.writeObject(Files.readAllBytes(rdpFile.toPath())); // Sending rtp description file to client
 
-                Server.FFmpegProcess.waitFor();
+                process.waitFor();
 
-            } else {
-
-                Server.FFmpegProcess= pb.start();
-                Server.FFmpegProcess.waitFor();
             }
 
         } catch(Exception ex) {
