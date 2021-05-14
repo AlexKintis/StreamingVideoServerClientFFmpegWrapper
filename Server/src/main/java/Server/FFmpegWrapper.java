@@ -3,7 +3,6 @@ package Server;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;

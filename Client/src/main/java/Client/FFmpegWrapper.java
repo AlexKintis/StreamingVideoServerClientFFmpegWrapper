@@ -3,7 +3,6 @@ package Client;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,29 +20,28 @@ public class FFmpegWrapper extends Thread {
 
         commandArgs.add(FFPLAY_PATH);
 
-        if(protocol.equals("None")) {
-            switch(selectedVideoResolution) {
-                case 240:
-                    protocol = "TCP";
-                    break;
-                case 360:
-                    protocol = "UDP";
-                    break;
-                case 480:
-                    protocol = "UDP";
-                    break;
-                case 720:
-                    protocol = "RTP/UDP";
-                case 1080:
-                    protocol = "RTP/UDP";
-                    break;
-            }
-        }
-
-
         try {
 
             final String message = "Protocol used : ";
+            if(protocol.equals("None")) {
+                switch(selectedVideoResolution) {
+                    case 240:
+                        protocol = "TCP";
+                        break;
+                    case 360:
+                        protocol = "UDP";
+                        break;
+                    case 480:
+                        protocol = "UDP";
+                        break;
+                    case 720:
+                        protocol = "RTP/UDP";
+                    case 1080:
+                        protocol = "RTP/UDP";
+                        break;
+                }
+            }
+
 
             switch(protocol) {
                 case "TCP":
@@ -85,9 +83,11 @@ public class FFmpegWrapper extends Thread {
             SocketClient.FFmpegProccess = pb.start();
             SocketClient.FFmpegProccess.waitFor();
 
-        } catch(IOException | ClassNotFoundException | InterruptedException ex) {
+        } catch(ClassNotFoundException | InterruptedException ex) {
             AppLogger.log(AppLogger.LogLevel.ERROR, ex.getMessage());
             System.exit(1);
+        } catch(IOException ioex) {
+            AppLogger.log(AppLogger.LogLevel.WARN, ioex.getMessage());
         }
 
     }
