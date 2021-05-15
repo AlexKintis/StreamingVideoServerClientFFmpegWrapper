@@ -15,10 +15,13 @@ import net.bramp.ffmpeg.FFprobe;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import net.bramp.ffmpeg.probe.FFmpegStream;
 
+/**
+ * This is an FFmpegWrapper defined by user in order to provide some functions to program also uses the predifined library
+ */
 public class FFmpegWrapper extends Thread {
 
-    private final static String FFMPEG_PATH = "/usr/bin/ffmpeg";
-    private final static String FFPROBE_PATH = "/usr/bin/ffprobe";
+    private final static String FFMPEG_PATH = "/usr/bin/ffmpeg"; // THIS Should be changed acorging to os
+    private final static String FFPROBE_PATH = "/usr/bin/ffprobe"; // THIS Should be changed acorging to os
 
     private static FFmpeg ffmpeg = null;
     private static FFprobe ffprobe = null;
@@ -55,6 +58,7 @@ public class FFmpegWrapper extends Thread {
         return resolution;
     }
 
+    // Convert file to specified type and resolution
     public static void convertFile(VideoFile file, videoType type, videoResolution resolution, Path outputFile) {
 
         final int videoResolution = Integer.parseInt(resolution.toString().substring(1, resolution.toString().length() - 1));
@@ -84,6 +88,7 @@ public class FFmpegWrapper extends Thread {
 
     }
 
+    // Process to stream a specified video at specified prototol video
     public void streamVideo(VideoFile video, String protocol, ObjectOutputStream oos) {
 
         ProcessBuilder pb = null;

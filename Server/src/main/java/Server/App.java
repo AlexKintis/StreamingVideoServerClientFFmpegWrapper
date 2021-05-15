@@ -19,6 +19,9 @@ public class App{
 		new App().startProcess();
 	}
 
+	/*
+	 * Initiate the process
+	 */
 	private void startProcess() {
         AppLogger.log(AppLogger.LogLevel.INFO, "Sequence Starting");
 
@@ -30,6 +33,9 @@ public class App{
 		new Server().start();
 	}
 
+	/*
+	 * This method is for server owner to view all the files that are in videos folder
+	 */
 	protected void showAllVideoFiles() {
 		videoFiles.forEach(x -> System.out.println(x.toString()));
 	}

@@ -35,6 +35,9 @@ public class Server extends App {
         initializeSpeedEquivalentResolutions();
     }
 
+    /*
+     * Resolutions available for client based on download speed
+     */
     public void initializeSpeedEquivalentResolutions() {
 
        // 1080p
@@ -79,6 +82,9 @@ public class Server extends App {
 
     }
 
+    /*
+     * Server Socket initiation
+     */
     public void start() {
 
         AppLogger.log(AppLogger.LogLevel.INFO, "Server is starting");
@@ -126,7 +132,7 @@ public class Server extends App {
     }
 
     /*
-     *    < Initiate Socket Connection >
+     *    < Start Video Selection Process >
      *    Ask user for which video wants to see (File, Resolution, codec)
      *    and also asks for streaming protocol
      */

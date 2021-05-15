@@ -13,6 +13,9 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 
+/**
+ * This Class is for handling video files conversion
+ */
 public class FilesHandler {
 
     private ArrayList<VideoFile> videoFiles = new ArrayList<VideoFile>();
@@ -28,6 +31,7 @@ public class FilesHandler {
         }
     }
 
+    // Check if videos folders exists
     private void checkIfFolderVideoFolderExists(Path folder) throws IOException {
         if(!Files.exists(folder)) {
                 Files.createDirectory(folder);
@@ -51,6 +55,9 @@ public class FilesHandler {
 
     }
 
+    /*
+     * Start the conversion process
+     */
     public void startVideosConversionProcess(ArrayList<VideoFile> files) {
 
         AppLogger.log(AppLogger.LogLevel.INFO, "Starting Conversion Process");
@@ -109,6 +116,7 @@ public class FilesHandler {
         }
     }
 
+    // Getter for videoFiles
     public ArrayList<VideoFile> getFiles() {
         return this.videoFiles;
     }

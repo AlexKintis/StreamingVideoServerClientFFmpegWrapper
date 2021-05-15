@@ -2,6 +2,9 @@ package Server;
 
 import java.nio.file.Path;
 
+/**
+ * Video file class
+ */
 public class VideoFile {
 
     private String name;

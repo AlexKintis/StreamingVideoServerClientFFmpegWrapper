@@ -7,6 +7,10 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.ListIterator;
 
+/**
+ * Class for each client definition
+ * Describes which video files can user download based on download rate
+ */
 public class User extends Server{
 
     private ArrayList<VideoFile> downloadableFiles = new ArrayList<>();
@@ -23,6 +27,9 @@ public class User extends Server{
         calculateUserVideoFiles();
     }
 
+    /*
+     * Calculate user video files that is able to see depending from download speed
+     */
     public void calculateUserVideoFiles() {
 
         ListIterator<FFmpegWrapper.videoResolution> iterator =
@@ -62,10 +69,12 @@ public class User extends Server{
 
     }
 
+    // Getter for downloadableFiles
     public ArrayList<VideoFile> getFiles() {
         return this.downloadableFiles;
     }
 
+    // get user Selected video for streaming
     public VideoFile getSelectedVideo(String filename) {
 
         userSelectedFileForStream = null;
@@ -79,6 +88,10 @@ public class User extends Server{
         return userSelectedFileForStream;
     }
 
+    /*
+     * Get filenames only without resolution and extension
+     * eg. filename-1080p.mp4 -> filename
+     */
     public ArrayList<String> getDinstictiveFileNames() {
 
         ArrayList<String> filenames = new ArrayList<>();

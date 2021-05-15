@@ -20,6 +20,7 @@ public class SocketClient extends App {
         AppLogger.log(AppLogger.LogLevel.INFO, "Client is starting");
     }
 
+    // Itiate client to server connection
     public void connectToServer(BigDecimal downloadRate) {
 
         try {
@@ -51,6 +52,7 @@ public class SocketClient extends App {
         }
     }
 
+    // Start the process of question and answer for the selection of video and etc.
     private void startVideoSelectionProcess() throws Exception {
 
         String choice = "";

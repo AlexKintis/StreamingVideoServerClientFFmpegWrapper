@@ -8,9 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This is an FFmpegWrapper defined by user in order to provide some functions to program also uses the predifined library
+ */
 public class FFmpegWrapper extends Thread {
 
-    private static final String FFPLAY_PATH = "/usr/bin/ffplay";
+    private static final String FFPLAY_PATH = "/usr/bin/ffplay"; // THIS Should be changed acording to os
     protected static File rdpFile = new File(System.getProperty("user.dir") + File.separator + "video.sdp");
 
     public static void playVideo(String protocol, ObjectInputStream ois, int selectedVideoResolution) {

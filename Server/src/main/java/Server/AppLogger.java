@@ -3,6 +3,9 @@ package Server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * AppLogger Class
+ */
 public class AppLogger {
 
     private static Logger log = LogManager.getLogger(Logger.class);

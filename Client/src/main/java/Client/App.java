@@ -10,6 +10,9 @@ import fr.bmartel.speedtest.SpeedTestSocket;
 import fr.bmartel.speedtest.inter.ISpeedTestListener;
 import fr.bmartel.speedtest.model.SpeedTestError;
 
+/**
+ * This class implements ISpeedTestListener interface in order to use speed test utility
+ */
 public class App implements ISpeedTestListener {
 	//
 	// Socket attributes
@@ -26,10 +29,12 @@ public class App implements ISpeedTestListener {
 
 		AppLogger.log(AppLogger.LogLevel.INFO, "Sequence Starting");
 
+		// Get 10mb file from otenet ftp -> because is close to us
 		new App().speedTest("http://speedtest.ftp.otenet.gr/files/test10Mb.db");
 
 	}
 
+	// speed test method
 	private void speedTest(String url) {
 
 		AppLogger.log(AppLogger.LogLevel.INFO, "Speedtest Starting");
